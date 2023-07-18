@@ -1,6 +1,11 @@
 # IsiLanguage
 ## Trabalho de Compiladores 2023.2 UFABC - Prof. Dr. Francisco Isidro Massetto.
 
+### Integrantes do grupo
+
+Gustavo Diogo Silva 11201920321
+Lucas Kiyota da Costa 11201921852
+
 ### Roadmap 
 
 | **Item** | **Itens Obrigatórios**                                           | **Feito** | **Data entregue** |
@@ -26,3 +31,9 @@
 | 6        | Um Interpretador (runtime) para a linguagem             |           |                   | 5            |
 
 ### Scripts
+
+- Para gerar o lexer e o parser de maneira automatizada:
+
+```bash
+bash generateLexerAndParser.sh
+```
