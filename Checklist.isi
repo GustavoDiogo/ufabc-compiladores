@@ -31,8 +31,8 @@ fimprog.
 
 programa
     numero a, b.
-    a := 1.
-    b := 2.
+    a := 2.
+    b := 1.
     
     enquanto ( a > b ) faca {
    escreva(b).
