@@ -1,27 +1,20 @@
 package br.edu.ufabc.compiler.datastructures;
 
 public class IsiVariable extends IsiSymbol {
-	
-	public static final int NUMBER = 0;
-	public static final int TEXT = 1;
-	public static final int NUMBERINT  =2;
-	public int utilizada = 0; 
-	
+
+	public static final int NUMBER   =0;
+	public static final int TEXT     =1;
+	public static final int CHAR     =2;
+	public static final int BOOLEAN  =3;
+
 	private int type;
 	private String value;
-	
-	
-	public IsiVariable (String name, int type, String value) {
+
+	public IsiVariable(String name, int type, String value) {
 		super(name);
-		this.type	= type;
-		this.value	= value;
-		}
-	
-	public int getUtilizada() {
-		return utilizada;
+		setType(type);
+		setValue(value);
 	}
-
-
 	public int getType() {
 		return type;
 	}
@@ -38,36 +31,25 @@ public class IsiVariable extends IsiSymbol {
 		this.value = value;
 	}
 
+	@Override
 	public String toString() {
-		return "IsiVariable [name=" + name + ", type =" + type + ", value=" + value + "]";
+		return "IsiVariable [name=" + getName() + ", type=" + getType() + ", value=" + getValue() + "]";
 	}
-	
+
 	public String generateJavaCode() {
 		String str;
-		
 		if (type == NUMBER) {
-			str = "double";
-		} else if (type == NUMBERINT) {
-			str = "int ";
+			str = "double ";
+		}
+		else if(type == TEXT){
+			str = "String ";
+		}
+		else if(type == CHAR){
+			str = "char ";
 		}
 		else {
-			str = "String";
+			str = "boolean ";
 		}
-		
 		return str + " " + super.name + ";";
-		
-	}
-	
-	public String generatePythonCode() {
-		String str;
-		if(type == NUMBER) {
-			str = "0.0";
-		}else if (type == NUMBERINT) {
-			str = "0";
-		}
-		else {
-			str = "None";
-		}
-		return "		"+super.name+" = "+str+"\n";
 	}
 }

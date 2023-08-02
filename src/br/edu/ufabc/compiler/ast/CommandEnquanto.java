@@ -2,49 +2,29 @@ package br.edu.ufabc.compiler.ast;
 
 import java.util.ArrayList;
 
-public class CommandEnquanto extends AbstractCommand {
-
+public class CommandEnquanto extends AbstractCommand{
 	private String condition;
-	private ArrayList<AbstractCommand> listaCmdWhile;
+	private ArrayList<AbstractCommand> lista;
 	
-	
-	public CommandEnquanto(String condition, ArrayList<AbstractCommand> lw ) {
+	public CommandEnquanto(String condition, ArrayList<AbstractCommand> comandos) {
 		this.condition = condition;
-		this.listaCmdWhile = lw;		
+		this.lista = comandos;
 	}
-	
 
 	@Override
 	public String generateJavaCode() {
-		
-		StringBuilder str = new StringBuilder();
-		str.append("\n");
-		str.append("while (" + condition + ") {");
-		for (AbstractCommand cmd: listaCmdWhile) {
-			str.append(cmd.generateJavaCode());
-			
+        StringBuilder str = new StringBuilder();
+		str.append("while ("+condition+") {\n");
+		for (AbstractCommand cmd: lista) {
+			str.append("\t\t\t"+cmd.generateJavaCode());
 		}
-		str.append("}");
-		str.append("\n");
-				
-		return str.toString();
-	}
-	
-	@Override
-	public String generatePythonCode() {
-		
-		StringBuilder str = new StringBuilder();		
-		str.append("		while (" + condition + ") :\n");
-		for (AbstractCommand cmd: listaCmdWhile) {
-			str.append("	"+cmd.generatePythonCode());
-			
-		}	
-				
-		return str.toString();
-	}
-	
-	@Override
-	public String toString() {
-		return "CommandEnquanto [condition=" + condition + ", listaTrue=" + listaCmdWhile + "]";
-	}
+		str.append("\n}\n");
+        return str.toString();
+    }
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return "CommandEnquanto [condition=" + condition + ", lista=" + lista + "]";
+    }
+
 }

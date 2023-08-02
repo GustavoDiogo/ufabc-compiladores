@@ -1,18 +1,17 @@
 grammar IsiLang;
 
 @header {
-	import br.com.professorisidro.isilanguage.datastructure.IsiSymbol;
-	import br.com.professorisidro.isilanguage.datastructure.IsiSymbolTable;
-	import br.com.professorisidro.isilanguage.datastructure.IsiVariable;
-	import br.com.professorisidro.isilanguage.exceptions.IsiSemanticException;
-	import br.com.professorisidro.isilanguage.ast.IsiProgram;
-	import br.com.professorisidro.isilanguage.ast.AbstractCommand;
-	import br.com.professorisidro.isilanguage.ast.CommandLeitura;
-	import br.com.professorisidro.isilanguage.ast.CommandEscrita;
-	import br.com.professorisidro.isilanguage.ast.CommandAtribuicao;
-	import br.com.professorisidro.isilanguage.ast.CommandDecisao;
-	import br.com.professorisidro.isilanguage.ast.CommandEnquanto;
-	import br.com.professorisidro.isilanguage.ast.CommandEscolha;
+	import br.edu.ufabc.compiler.datastructures.IsiSymbol;
+	import br.edu.ufabc.compiler.datastructures.IsiSymbolTable;
+	import br.edu.ufabc.compiler.datastructures.IsiVariable;
+	import br.edu.ufabc.compiler.exceptions.IsiSemanticException;
+	import br.edu.ufabc.compiler.ast.IsiProgram;
+	import br.edu.ufabc.compiler.ast.AbstractCommand;
+	import br.edu.ufabc.compiler.ast.CommandLeitura;
+	import br.edu.ufabc.compiler.ast.CommandEscrita;
+	import br.edu.ufabc.compiler.ast.CommandAtribuicao;
+	import br.edu.ufabc.compiler.ast.CommandDecisao;
+	import br.edu.ufabc.compiler.ast.CommandEnquanto;
 	import java.util.ArrayList;
 	import java.util.Stack;
 	
@@ -22,333 +21,413 @@ grammar IsiLang;
 	private int _tipo;
 	private String _varName;
 	private String _varValue;
+	private ArrayList<Integer> _tipoVar = new ArrayList<Integer>();
 	private IsiSymbolTable symbolTable = new IsiSymbolTable();
 	private IsiSymbol symbol;
 	private IsiProgram program = new IsiProgram();
 	private ArrayList<AbstractCommand> curThread;
 	private Stack<ArrayList<AbstractCommand>> stack = new Stack<ArrayList<AbstractCommand>>();
-	
-	
+	private String _opfunmat;
 	private String _readID;
 	private String _writeID;
 	private String _exprID;
 	private String _exprContent;
-	
 	private String _exprDecision;
 	private ArrayList<AbstractCommand> listaTrue;
 	private ArrayList<AbstractCommand> listaFalse;
-	
-	private String _exprWhile;
-	private ArrayList<AbstractCommand> listaCmdWhile;
-	
-	private String _switch;
-	private String _switch2;
-	private String _switch3;
-	private ArrayList<AbstractCommand> listaSwitch1;
-	private ArrayList<AbstractCommand> listaSwitch2;
-	
-	
-	
-	public void verificaID (String id) {
-		if (!symbolTable.exists(id)) {
-			throw new IsiSemanticException("Symbol" + id + " not declared");
-		
-		}
-	
-	}
-	
-	
-	public void notUsedSymbol (IsiSymbol symbol) {
-		IsiVariable variable = (IsiVariable) symbol;
-		
-		if (variable.getValue() == null) {
-			System.out.println("Symbol " + symbol.getName() + " is not used");
-		
-		}
-	}
-	
-	
-	public void exibeComandos() {
-		for(AbstractCommand c: program.getComandos()) {
-			System.out.println(c);
-			
-		}
-	
-	
-	}
-	
-	public void generateCode() {
-		program.generateTarget();
-	
-	
+	private ArrayList<AbstractCommand> listaEnq;
+
+
+	public void verificaID(String id){
+		if (!symbolTable.exists(id))
+			throw new IsiSemanticException("Símbolo "+id+" não declarado");
 	}
 
+	public String typeToString(int isiType) {
+		switch (isiType) {
+			case 0:
+				return "NUMBER";
+			case 1:
+				return "TEXT";
+			case 2:
+				return "CHAR";
+			case 3:
+				return "BOOLEAN";
+			default:
+				return "";
+		}
+	}
+
+	public void verificaCompatibilidade(ArrayList<Integer> tipos) {
+		int tipoEsq = tipos.get(0);
+		for (int tipo: tipos) {
+			if (tipoEsq != tipo) {
+				String errorMsg = String.format("Atribuição incorreta: %s and %s", typeToString(tipoEsq), typeToString(tipo));
+				tipos.removeAll(tipos);
+				throw new IsiSemanticException(errorMsg);
+			}
+		}
+		tipos.removeAll(tipos);
+	}
+
+	public void verificaAttrib(String id) {
+		if (symbolTable.exists(id) && symbolTable.get(id) == null)
+			throw new IsiSemanticException(String.format("\"%s\" não foi declarada.", id));
+	}
+
+	public void checkInitialized(String id) {
+        if(!symbolTable.checkInitialized(id))
+            throw new IsiSemanticException("Símbolo "+id+" não inicializado.");
+    }
+
+    public void setInitialized(String id) {
+        symbolTable.setInitializedBy(id);
+    }
+
+    public void showWarningsUnusedVariables() {
+        for(IsiSymbol s: symbolTable.getNotUsedSymbols())
+            System.out.println("AVISO: Variável <" + s.getName() + "> foi declarada, mas não foi utilizada");
+    }
+
+	public void exibeComandos(){
+		for (AbstractCommand c: program.getComandos())
+			System.out.println(c);
+	}
+
+	public void generateCode(){
+		program.generateTarget();
+	}
+
+	public ArrayList<String> getWarnings() {
+        ArrayList<String> warnings = new ArrayList<String>();
+        for(IsiSymbol s: symbolTable.getNotUsedSymbols())
+            warnings.add(String.format("AVISO: Variável <%s> foi declarada sem valor inicial", s.getName()));
+        return warnings;
+    }
 }
 
+prog : 'programa'
+	   decl
+	   bloco
+	   'fimprog.' {
+					program.setVarTable(symbolTable);
+					program.setComandos(stack.pop());
+					showWarningsUnusedVariables();
+				  }
+	 ;
+
+decl    :  (declaravar)+
+        ;
 
 
-prog	: 'programa' decl bloco 'fimprog;'
-		{	program.setVarTable(symbolTable);
-			program.setComandos(stack.pop());
-			
-			for(IsiSymbol symbol : symbolTable.getAll()) {
-           	  	 notUsedSymbol(symbol);
-           	}  
-		}
-		;
-		
-		
-decl 	: (declaravar)+
-		;
-		
-declaravar	: tipo ID {
-						_varName = _input.LT(-1).getText();
-						_varValue = null;
-						symbol = new IsiVariable(_varName, _tipo, _varValue);
-						
-						
-						if (!symbolTable.exists(_varName)) {
-							symbolTable.add(symbol);
-						}else {
-							throw new IsiSemanticException ("Symbol " + _varName + " alread declared");
-						}
-						
+declaravar :  tipo  ID   {
+	                      	 _varName = _input.LT(-1).getText();
+	                      	 _varValue = null;
+	                      	 symbol = new IsiVariable(_varName, _tipo, _varValue);
+	                      	 if (!symbolTable.exists(_varName))
+	                      	    symbolTable.add(symbol);
+	                      	 else
+	                      	 	 throw new IsiSemanticException("Símbolo "+_varName+" já declarado anteriormente");
+                         }
+                    (
+					VIR
+              	    ID   {
+	                  		 _varName = _input.LT(-1).getText();
+	                  		 _varValue = null;
+	                  		 symbol = new IsiVariable(_varName, _tipo, _varValue);
+	                  		 if (!symbolTable.exists(_varName))
+	                  		    symbolTable.add(symbol);
+	                  		 else
+	                  		 	 throw new IsiSemanticException("Símbolo "+_varName+" já declarado anteriormente");
+                         }
+              	    )*
+               	    SC
+           ;
 
-					}
+tipo       : 'numero' 	 { _tipo = IsiVariable.NUMBER;  }
+           | 'texto' 	 { _tipo = IsiVariable.TEXT;  }
+           | 'caractere' { _tipo = IsiVariable.CHAR;  }
+           | 'logico' 	 { _tipo = IsiVariable.BOOLEAN;  }
+           ;
 
-
-
-			 (	VIR
-			 	ID {
-						_varName = _input.LT(-1).getText();
-						_varValue = null;
-						symbol = new IsiVariable(_varName, _tipo, _varValue);
-						
-						if (!symbolTable.exists(_varName)) {
-							symbolTable.add(symbol);
-						}else {
-							throw new IsiSemanticException ("Symbol " + _varName + " alread declared");
-						}
-
-					}
-			 		)* SC
-			;
-
-tipo	: 'numero'	{_tipo = IsiVariable.NUMBER;}
-		| 'texto'	{_tipo = IsiVariable.TEXT;}
-		| 'inteiro'  { _tipo = IsiVariable.NUMBERINT;  }
-		;
-
-		
-bloco	: 
-		{ 	curThread = new ArrayList<AbstractCommand>();
-			stack.push(curThread);
-		}
-		(cmd)+
-		;
-		
-cmd		: cmdleitura 
-		 | cmdescrita	
-		 | cmdattrib
-		 | cmdselecao
-		 | cmdenquanto
-		 | cmdswitch
+bloco	: {
+			curThread = new ArrayList<AbstractCommand>();
+	        stack.push(curThread);
+          }
+          (cmd)+
 		;
 
 
-		
-cmdswitch	:	'escolha'	AP
-							(ID | NUMBER | NUMBERINT) { verificaID(_input.LT(-1).getText());
-									_switch = _input.LT(-1).getText();
-								}
-							FP
-							ACH
-							'caso'	(ID | NUMBER | NUMBERINT) {_switch2 = _input.LT(-1).getText(); }	PO
-									{ curThread = new ArrayList<AbstractCommand>(); 
-									stack.push(curThread);
-									}
-									(cmd)+
-							{
-								listaSwitch1 = stack.pop();	
-							} 
-								
-							'caso'	(ID | NUMBER | NUMBERINT) {_switch3 = _input.LT(-1).getText(); }	PO
-									{ curThread = new ArrayList<AbstractCommand>(); 
-									stack.push(curThread);
-									}
-									(cmd)+
-							{
-								listaSwitch2 = stack.pop();	
-							}
+cmd		:  cmdleitura
+ 		|  cmdescrita
+ 		|  cmdattrib
+ 		|  cmdselecao
+		|  cmdenquanto
+		;
 
-							FCH
-							{
-								CommandEscolha cmd = new CommandEscolha(_switch, _switch2, _switch3, listaSwitch1, listaSwitch2);
-								stack.peek().add(cmd);
-							}	
-			;
-		
-		
-cmdenquanto	: 'enquanto' 	AP
-							
-							ID {	verificaID( _input.LT(-1).getText() );
-				 	 				_exprWhile = _input.LT(-1).getText();
-				 	 			}
-							
-							OPREL { _exprWhile += _input.LT(-1).getText(); }
-							
-							(ID | NUMBER) {_exprWhile += _input.LT(-1).getText();}
-							
-							FP 
-							
-							ACH
-							{ 	curThread = new ArrayList<AbstractCommand>();
-								stack.push(curThread);
-							}
-							
-							(cmd)+ 
-							
-							FCH
-							{	listaCmdWhile = stack.pop();
-								CommandEnquanto cmd = new CommandEnquanto(_exprWhile, listaCmdWhile);
-								stack.peek().add(cmd);
-							}
+cmdleitura	: 'leia'
+			  AP
+			  ID {
+					verificaID(_input.LT(-1).getText());
+					_readID = _input.LT(-1).getText();
+				 }
+			  FP
+			  SC {
+					IsiVariable var = (IsiVariable)symbolTable.get(_readID);
+					CommandLeitura cmd = new CommandLeitura(_readID, var);
+					setInitialized(_readID);
+					stack.peek().add(cmd);
+				 }
 			;
 
-		
-cmdleitura	: 'leia' AP
-				 	 ID {	verificaID( _input.LT(-1).getText() );
-				 	 		_readID = _input.LT(-1).getText();
-				 	 	}
-				 	 FP
-				 	 SC
-				 	 {
-				 	 IsiVariable var = (IsiVariable) symbolTable.get(_readID);
-				 	 CommandLeitura cmd = new CommandLeitura(_readID, var);
-				 	 stack.peek().add(cmd);
-				 	 
-				 	 }
-			;
-	
-cmdescrita	: 'escreva' AP
-						ID {	verificaID( _input.LT(-1).getText() );
-								_writeID = _input.LT(-1).getText();
-						}
-						FP 
-						SC {
-								CommandEscrita cmd = new CommandEscrita(_writeID);
-								stack.peek().add(cmd);	
-							}
+cmdescrita	: 'escreva'
+                 AP
+                 ID  {
+						verificaID(_input.LT(-1).getText());
+	                  	_writeID = _input.LT(-1).getText();
+						checkInitialized(_writeID);
+                     }
+                 FP
+                 SC  {
+               		 	CommandEscrita cmd = new CommandEscrita(_writeID);
+               	  		stack.peek().add(cmd);
+               		 }
 			;
 
-cmdattrib	: ID {	verificaID( _input.LT(-1).getText() );
-					_exprID = _input.LT(-1).getText();
-			}
-			 ATTR { _exprContent = ""; }
-				 
-			 
-			 
-			 
-			 expr 
-			 SC {
-			 	IsiVariable var = (IsiVariable) symbolTable.get(_exprID);
-			 	CommandAtribuicao cmd = new CommandAtribuicao(_exprID, _exprContent, var);
-			 	stack.peek().add(cmd);
-			 
-			 	}
-			;
-			
-cmdselecao 	:  'if' AP 
-					ID 				{ _exprDecision = _input.LT(-1).getText();}
-					OPREL 			{ _exprDecision += _input.LT(-1).getText();}
-					(ID | NUMBER) 	{ _exprDecision += _input.LT(-1).getText();}
-					FP 
-					ACH
-					{ 	curThread = new ArrayList<AbstractCommand>();
-						stack.push(curThread);
+cmdattrib	:  ID 	{
+						verificaID(_input.LT(-1).getText());
+						verificaAttrib(_input.LT(-1).getText());
+                    	_exprID = _input.LT(-1).getText();
+						_tipoVar.add(symbolTable.getTypeBy(_exprID));
+                    }
+               ATTR {
+						_exprContent = "";
 					}
-					
-					 
-					(cmd)+ 
-					FCH 
-					{
-						listaTrue = stack.pop();
-					}
-			  ('else' 
-			  		ACH
-			  		{ 	curThread = new ArrayList<AbstractCommand>();
-						stack.push(curThread);
-					}
-			  		
-			  		(cmd)+ 
-			  		
-			  		FCH
-			  		{
-						listaFalse = stack.pop();
-						CommandDecisao cmd = new CommandDecisao(_exprDecision, listaTrue, listaFalse);
+               expr
+               SC   {
+				 		verificaCompatibilidade(_tipoVar);
+               	 		CommandAtribuicao cmd = new CommandAtribuicao(_exprID, _exprContent);
+						setInitialized(_exprID);
 						stack.peek().add(cmd);
-					}
-			  		
-			  		)?
+               		}
 			;
-			
-expr		: termo (
-				OP {_exprContent += _input.LT(-1).getText();}
-				termo
-				)*
+
+
+cmdselecao  :  'se' AP
+                    ID    		  {
+									verificaID(_input.LT(-1).getText());
+									verificaAttrib(_input.LT(-1).getText());
+									_exprDecision = _input.LT(-1).getText();
+									_tipoVar.add(symbolTable.getTypeBy(_input.LT(-1).getText()));
+						  		  }
+                    OPREL 		  { _exprDecision += _input.LT(-1).getText(); }
+                    (ID | NUMBER) {
+									verificaAttrib(_input.LT(-1).getText());
+									if (_input.LT(-1).getText().matches("\\d+(\\.\\d+)?"))
+										_tipoVar.add(IsiVariable.NUMBER);
+									else {
+										verificaID(_input.LT(-1).getText());
+										_tipoVar.add(symbolTable.getTypeBy(_input.LT(-1).getText()));
+									}
+									_exprDecision += _input.LT(-1).getText();
+								  }
+                    FP 			  { verificaCompatibilidade(_tipoVar); }
+                    ACH			  {
+									curThread = new ArrayList<AbstractCommand>();
+                    				stack.push(curThread);
+                    			  }
+                    (cmd)+
+
+                    FCH			  { listaTrue = stack.pop(); }
+                    (
+					'senao'
+                   	ACH
+								  {
+									curThread = new ArrayList<AbstractCommand>();
+									stack.push(curThread);
+								  }
+                   	(cmd+)
+                   	FCH
+								  {
+									listaFalse = stack.pop();
+									CommandDecisao cmd = new CommandDecisao(_exprDecision, listaTrue, listaFalse);
+									stack.peek().add(cmd);
+								  }
+                    )?
+            ;
+
+cmdenquanto  : 			  'enquanto'
+						  AP
+
+						  ID		    {
+									 	  verificaID(_input.LT(-1).getText());
+										  verificaAttrib(_input.LT(-1).getText());
+										  _exprDecision = _input.LT(-1).getText();
+										  _tipoVar.add(symbolTable.getTypeBy(_input.LT(-1).getText()));
+										}
+						  OPREL 		{ _exprDecision += _input.LT(-1).getText(); }
+						  (ID | NUMBER)
+						 				{
+											verificaAttrib(_input.LT(-1).getText());
+											if (_input.LT(-1).getText().matches("\\d+(\\.\\d+)?"))
+												_tipoVar.add(IsiVariable.NUMBER);
+											else {
+												verificaID(_input.LT(-1).getText());
+												_tipoVar.add(symbolTable.getTypeBy(_input.LT(-1).getText()));
+											}
+											_exprDecision += _input.LT(-1).getText();
+										}
+						  FP 			{ verificaCompatibilidade(_tipoVar); }
+						  'faca'
+                          ACH
+                           				{
+										  curThread = new ArrayList<AbstractCommand>();
+                           				  stack.push(curThread);
+                           				}
+                          (cmd)+
+
+                          FCH
+                          				{
+                            			  listaEnq = stack.pop();
+                            			  CommandEnquanto cmd = new CommandEnquanto(_exprDecision, listaEnq);
+                            			  stack.peek().add(cmd);
+                           				}
+			 ;
+
+
+expr		:  (termo|funcaomat)
+			   (
+	           OP  { _exprContent += _input.LT(-1).getText(); }
+	           (termo|funcaomat)
+	           )*
+		    ;
+
+funcaomat : OPFUNCAOMAT {
+						  _opfunmat = _input.LT(-1).getText();
+						  if (_input.LT(-1).getText().equals("logaritmo"))
+							_exprContent += String.format("(%s", _input.LT(-1).getText());
+						  else
+						  	_exprContent += _input.LT(-1).getText();
+						}
+			AP 			{
+						  _exprContent += _input.LT(-1).getText();
+						}
+			(NUMBER|ID) {
+						  if (_input.LT(-1).getText().matches("\\d+(\\.\\d+)?"))
+						  	_tipoVar.add(IsiVariable.NUMBER);
+						  else {
+						  	verificaID(_input.LT(-1).getText());
+							checkInitialized(_input.LT(-1).getText());
+	               	   	  	_tipoVar.add(symbolTable.getTypeBy(_input.LT(-1).getText()));
+						  }
+
+						  _exprContent += _input.LT(-1).getText();
+						}
+			VIR		    {
+						  if (_opfunmat.equals("logaritmo")) {
+							_exprContent += ") / Math.log(";
+						  }
+						  else
+						  	_exprContent += _input.LT(-1).getText();
+						}
+			(NUMBER|ID) {
+						  if (_input.LT(-1).getText().matches("\\d+(\\.\\d+)?"))
+						  	_tipoVar.add(IsiVariable.NUMBER);
+						  else {
+						  	verificaID(_input.LT(-1).getText());
+							checkInitialized(_input.LT(-1).getText());
+						  	_tipoVar.add(symbolTable.getTypeBy(_input.LT(-1).getText()));
+						  }
+
+						  if (_opfunmat.equals("raiz"))
+							_exprContent += String.format("1/%s", _input.LT(-1).getText());
+						  else
+						    _exprContent += _input.LT(-1).getText();
+						}
+			FP 			{
+						  if (_opfunmat.equals("logaritmo"))
+						  	_exprContent += _input.LT(-1).getText();
+						  _exprContent += _input.LT(-1).getText();
+						}
 			;
-			
-termo		: ID {	verificaID( _input.LT(-1).getText() );
-					_exprContent += _input.LT(-1).getText();
-		
-			}	 
-			| NUMBER
-			{	_exprContent += _input.LT(-1).getText();
-			
-			
-			}
-			
+
+termo		: ID 	  {
+				   	   	verificaID(_input.LT(-1).getText());
+						checkInitialized(_input.LT(-1).getText());
+	               	   	_tipoVar.add(symbolTable.getTypeBy(_input.LT(-1).getText()));
+					   	_exprContent += _input.LT(-1).getText();
+                 	  }
+            | NUMBER  {
+					   	_tipoVar.add(IsiVariable.NUMBER);
+              		    _exprContent += _input.LT(-1).getText();
+              		  }
+			| CHAR    {
+					    _tipoVar.add(IsiVariable.CHAR);
+              		    _exprContent += _input.LT(-1).getText();
+              		  }
+			| TEXT    {
+					    _tipoVar.add(IsiVariable.TEXT);
+              		    _exprContent += _input.LT(-1).getText();
+               		  }
+			| BOOLEAN {
+						_tipoVar.add(IsiVariable.BOOLEAN);
+              			_exprContent += _input.LT(-1).getText();
+               		  }
 			;
+
 
 AP	: '('
 	;
-	
+
 FP	: ')'
 	;
-	
-SC	: ';'
+
+SC	: '.'
 	;
-	
-OP  : '+' | '-' | '*' | '/'
+
+OP	: '+' | '-' | '*' | '/'
 	;
-	
-ATTR	: ':='
-		;
-		
-VIR		: ','
+
+ATTR : ':='
+	 ;
+
+VIR  : ','
+     ;
+
+ACH  : '{'
+     ;
+
+FCH  : '}'
+     ;
+
+OPREL : '>' | '<' | '>=' | '<=' | '==' | '!='
+      ;
+
+BOOLEAN : 'true'
+		| 'false'
+        ;
+
+OPFUNCAOMAT : 'potencia'
+			| 'logaritmo'
+			| 'raiz'
+		    ;
+
+ID	: [a-z] ([a-z] | [A-Z] | [0-9])*
+	;
+
+NUMBER	: [0-9]+ ('.' [0-9]+)?
 		;
 
-ACH	:	'{'
-	;
-	
-FCH : '}'
-	;
-		
-OPREL	: '>' | '<' | '>=' | '<=' | '==' | '!='
-		; 		
+TEXT : '"' ( '\\"' | . )*? '"'
+	 ;
 
-ID		: [a-z] ([a-z] | [A-Z] | [0-9])*
-		;
-		
-NUMBER  : [0-9]+ ('.'[0-9]+)?
-		;
-		
-WS : (' ' | '\n' | '\t' | '\r') -> skip;
+CHAR : '\'' ( '\\\'' | . ) '\''
+     ;
 
-NUMBERINT	: [0-9]+
-		;
+WS	: (' ' | '\t' | '\n' | '\r') -> skip;
 
-PO	: ':'
-	;
+MLCOMMENT : ('/*' .*? '*/') -> skip;
+
+SLCOMMENT: ('//' ~[\r\n]*)  -> skip;
 
 			
