@@ -11,16 +11,16 @@ Lucas Kiyota da Costa 11201921852
 
 | **Item** | **Itens Obrigatórios**                                           | **Feito** | **Data entregue** |
 |----------|------------------------------------------------------------------|-----------|-------------------|
-| 1        | Possui 2 tipos de variáveis                                      |           |                   |
-| 2        | Possui a estrutura If.. else                                     |           |                   |
-| 3        | Possui estrutura de controle while/do while                      |           |                   |
-| 4        | Operações Aritméticas executadas corretamente                    |           |                   |
-| 5        | Atribuições realizadas corretamente                              |           |                   |
-| 6        | Possui operações de Entrada e Saída                              |           |                   |
-| 7        | Aceita números decimais                                          |           |                   |
-| 8        | Verificar se a variável já foi previamente declarada             |           |                   |
-| 9        | Verificar se a variável foi declarada e não foi usada            |           |                   |
-| 10       | Verificar se uma variável está sendo usada sem ter valor inicial |           |                   |
+| 1        | Possui 2 tipos de variáveis                                      | ✅         | 02/08/2023        |
+| 2        | Possui a estrutura If.. else                                     | ✅         | 02/08/2023        |
+| 3        | Possui estrutura de controle while/do while                      | ✅         | 02/08/2023        |
+| 4        | Operações Aritméticas executadas corretamente                    | ✅         | 02/08/2023        |
+| 5        | Atribuições realizadas corretamente                              | ✅         | 02/08/2023        |
+| 6        | Possui operações de Entrada e Saída                              | ✅         | 02/08/2023        |
+| 7        | Aceita números decimais                                          | ✅         | 02/08/2023        |
+| 8        | Verificar se a variável já foi previamente declarada             | ✅         | 02/08/2023        |
+| 9        | Verificar se a variável foi declarada e não foi usada            | ✅         | 02/08/2023        |
+| 10       | Verificar se uma variável está sendo usada sem ter valor inicial | ✅         | 02/08/2023        |
 
 | **Item** | **Itens Opcionais (aqui estão apenas alguns exemplos)** | **Feito** | **Data entregue** | Complexidade |
 |----------|---------------------------------------------------------|-----------|-------------------|--------------|
