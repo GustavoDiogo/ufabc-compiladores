@@ -141,7 +141,7 @@ declaravar :  tipo  ID   {
 	                  		 	 throw new IsiSemanticException("Símbolo "+_varName+" já declarado anteriormente");
                          }
               	    )*
-               	    SC
+               	    PF
            ;
 
 tipo       : 'numero' 	 { _tipo = IsiVariable.NUMBER;  }
@@ -172,7 +172,7 @@ cmdleitura	: 'leia'
 					_readID = _input.LT(-1).getText();
 				 }
 			  FP
-			  SC {
+			  PF {
 					IsiVariable var = (IsiVariable)symbolTable.get(_readID);
 					CommandLeitura cmd = new CommandLeitura(_readID, var);
 					setInitialized(_readID);
@@ -181,18 +181,22 @@ cmdleitura	: 'leia'
 			;
 
 cmdescrita	: 'escreva'
-                 AP
+                 AP (
                  ID  {
 						verificaID(_input.LT(-1).getText());
 	                  	_writeID = _input.LT(-1).getText();
 						checkInitialized(_writeID);
                      }
+                 | 
+	        	 TEXT {
+	        		 _writeID = _input.LT(-1).getText();
+	        	 	CommandEscrita cmd = new CommandEscrita(_writeID);
+               	  	stack.peek().add(cmd);
+	       		  }
+                 )
                  FP
-                 SC  {
-               		 	CommandEscrita cmd = new CommandEscrita(_writeID);
-               	  		stack.peek().add(cmd);
-               		 }
-			;
+                 PF
+           ;
 
 cmdattrib	:  ID 	{
 						verificaID(_input.LT(-1).getText());
@@ -204,7 +208,7 @@ cmdattrib	:  ID 	{
 						_exprContent = "";
 					}
                expr
-               SC   {
+               PF   {
 				 		verificaCompatibilidade(_tipoVar);
                	 		CommandAtribuicao cmd = new CommandAtribuicao(_exprID, _exprContent);
 						setInitialized(_exprID);
@@ -382,7 +386,7 @@ AP	: '('
 FP	: ')'
 	;
 
-SC	: '.'
+PF	: '.'
 	;
 
 OP	: '+' | '-' | '*' | '/'
