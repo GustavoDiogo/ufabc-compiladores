@@ -189,13 +189,14 @@ cmdescrita	: 'escreva'
                      }
                  | 
 	        	 TEXT {
-	        		 _writeID = _input.LT(-1).getText();
-	        	 	CommandEscrita cmd = new CommandEscrita(_writeID);
-               	  	stack.peek().add(cmd);
+	        		 	_writeID = _input.LT(-1).getText();
 	       		  }
                  )
                  FP
-                 PF
+                 PF {
+                 		CommandEscrita cmd = new CommandEscrita(_writeID);
+               	  		stack.peek().add(cmd);
+               		 }
            ;
 
 cmdattrib	:  ID 	{
