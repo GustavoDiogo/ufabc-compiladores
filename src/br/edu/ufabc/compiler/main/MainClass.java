@@ -14,7 +14,7 @@ public class MainClass {
 			IsiLangParser parser;
 			
 			//leio o arquivo "input.isi" e isso é entrada para o analisador lexico
-			lexer = new IsiLangLexer(CharStreams.fromFileName("input.isi"));
+			lexer = new IsiLangLexer(CharStreams.fromFileName("Checklist.isi"));
 			
 			
 			// crio um fluxo de tokens para passar para o PARSER

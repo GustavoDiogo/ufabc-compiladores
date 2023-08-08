@@ -156,7 +156,7 @@ public class IsiLangParser extends Parser {
 			int tipoEsq = tipos.get(0);
 			for (int tipo: tipos) {
 				if (tipoEsq != tipo) {
-					String errorMsg = String.format("Atribuição incorreta: %s and %s", typeToString(tipoEsq), typeToString(tipo));
+					String errorMsg = String.format("Atribuição incorreta: %s e %s", typeToString(tipoEsq), typeToString(tipo));
 					tipos.removeAll(tipos);
 					throw new IsiSemanticException(errorMsg);
 				}

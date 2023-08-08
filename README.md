@@ -25,7 +25,7 @@ Lucas Kiyota da Costa 11201921852
 | **Item** | **Itens Opcionais (aqui estão apenas alguns exemplos)** | **Feito** | **Data entregue** | Complexidade |
 |----------|---------------------------------------------------------|-----------|-------------------|--------------|
 | 1        | Editor Highlight (simulando uma pequena IDE)            |           |                   | 3            |
-| 2        | Avaliador de expressões aritméticas                     |           |                   | 3            |
+| 2        | Avaliador de expressões aritméticas                     |✅         |08/08/2023         | 3            |
 | 3        | Inserção de Operadores lógicos                          |           |                   | 2            |
 | 4        | Geração de várias linguagens-alvo                       |           |                   | 3            |
 | 5        | Uma API Rest para implementação do compilador           |           |                   | 4            |

@@ -100,3 +100,18 @@ fimprog.
 programa
 	numero a.
 fimprog.
+
+// Item OPCIONAL - Avaliador de expressões aritméticas
+
+programa
+    texto a.
+   	numero b,c.
+    
+    a := "Texto".
+    
+    b := 1.
+    
+    c := a + b.
+    
+    escreva(a).
+fimprog.
