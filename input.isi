@@ -1,20 +1,26 @@
 programa
 numero a,b,c,d.
-escreva(“Programa Teste”).
-escreva (“Digite A”).
-leia (a).
-escreva (“Digite B”).
-leia (b).
-if (a<b)
+
+escreva("Programa Teste").
+
+escreva("Digite A").
+leia(a).
+
+escreva("Digite B").
+leia(b).
+se (a<b)
 {
  c := a + b.
-}else
+}senao
 {
  c := a - b.
 }
-escreva (“C e igual a ”).
-escreva (c).
+escreva("C e igual a ").
+escreva(c).
+
 d := c * a + b.
-escreva (“D e igual a ”).
-escreva (d).
+
+escreva("D e igual a ").
+escreva(d).
+
 fimprog.
