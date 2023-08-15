@@ -27,8 +27,8 @@ Lucas Kiyota da Costa 11201921852
 | 1        | Editor Highlight (simulando uma pequena IDE)            |           |                   | 3            |
 | 2        | Avaliador de expressões aritméticas                     |✅         |08/08/2023         | 3            |
 | 3        | Inserção de Operadores lógicos                          |           |                   | 2            |
-| 4        | Geração de várias linguagens-alvo(Java + Python)               |✅         |15/08/2023         | 3            |
-| 5        | Uma API Rest para implementação do compilador           |           |                   | 4            |
+| 4        | Geração de várias linguagens-alvo(Java + Python)        |✅         |15/08/2023         | 3            |
+| 5        | Uma API Rest para implementação do compilador           |✅         |15/08/2023         | 4            |
 | 6        | Um Interpretador (runtime) para a linguagem             |           |                   | 5            |
 
 ### Scripts
