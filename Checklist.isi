@@ -1,0 +1,117 @@
+// REQUISITO MÍNIMO 1: Possuir 2 tipos de varíaveis
+
+programa
+    numero a.
+    texto b.
+    
+    a := 1.
+    b := "Ola Mundo".
+    
+    escreva(a).
+    escreva(b).
+fimprog.
+
+// REQUISITO MÍNIMO 2: Possui a estrutura If.. else
+
+programa
+    numero a, b.
+    a := 1.
+    b := 2.
+    
+  se ( a > b ) {
+     escreva (a).
+  }
+  senao {
+     escreva (b).
+  }
+  
+fimprog.
+	
+// REQUISITO MÍNIMO 3: Possui estrutura de controle while/do while
+
+programa
+    numero a, b.
+    a := 2.
+    b := 1.
+    
+    enquanto ( a > b ) faca {
+   escreva(b).
+  } 
+  
+fimprog.
+
+// REQUISITO MÍNIMO 4: Operações Aritméticas executadas corretamente
+
+programa
+    numero a, b, c.
+    a := 1.
+    b := 2.
+    
+    c := a + b.
+    
+   escreva(c). 
+fimprog.
+
+// REQUISITO MÍNIMO 5: Atribuições realizadas corretamente
+
+programa
+    texto a.
+    
+    a := 1.
+    
+    escreva(a).
+fimprog.
+
+// REQUISITO MÍNIMO 6: Possui operações de Entrada e Saída
+
+programa
+    numero a.
+
+    leia(a).
+
+    escreva(a).
+fimprog.
+
+// Requisito Mínimo 7 - Aceitar números decimais
+
+programa
+    numero a.
+    a := 1.9999.
+    escreva(a).
+fimprog.
+
+// Requisito Mínimo 8 - Verificar se a variável já foi previamente declarada
+
+programa
+    escreva(b).
+fimprog.
+
+// Requisito Mínimo 9 - Verificar se a variável foi declarada e não foi usada
+
+programa
+    numero a.
+    numero b.
+    b := 2.
+    escreva(b).
+fimprog.
+
+// Requisito Mínimo 10 - Verificar se uma variável está sendo usada sem ter valor inicial
+
+programa
+	numero a.
+fimprog.
+
+// Item OPCIONAL - Avaliador de expressões aritméticas
+
+programa
+    texto a.
+   	numero b,c.
+    
+    a := "Texto".
+    
+    b := 1.
+    
+    c := a + b.
+    
+    escreva(a).
+fimprog.
