@@ -4,6 +4,7 @@ import br.edu.ufabc.compiler.springboot.CompilerOutput;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import br.edu.ufabc.compiler.exceptions.IsiSemanticException;
 import br.edu.ufabc.compiler.core.IsiLangLexer;
@@ -12,7 +13,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 public class IsiCompiler {
-    public CompilerOutput compile(String codigo, String linguagem) {
+    public CompilerOutput compile(String codigo, String linguagem, String escape) {
         String content = "";
         ArrayList<String> warnings = new ArrayList<String>();//Arrays.asList("Warnings 1","Warnings 2"));
         String error = "";
@@ -30,6 +31,12 @@ public class IsiCompiler {
             	content = CharStreams.fromFileName("MainClass.py").toString();
             } else {
             	content = CharStreams.fromFileName("MainClass.java").toString();
+            }
+            
+            if (escape.contains("0")) {
+            	content = StringEscapeUtils.unescapeJava(content);
+            	content = content.replace("\n", "");
+            	content = content.replace("\t", "");
             }
             
             warnings = parser.getWarnings();

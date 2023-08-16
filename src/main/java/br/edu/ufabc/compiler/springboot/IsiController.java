@@ -30,11 +30,16 @@ public class IsiController {
                     value="linguagem",
                     defaultValue = "java",
                     required=false
-            ) String linguagem
+            ) String linguagem,
+            @RequestParam(
+                    value="escape",
+                    defaultValue = "1",
+                    required=false
+            ) String escape
     ) {
         CompilerOutput compilerOutput;
         try {
-            compilerOutput = compiler.compile(decode(codigo), decode(linguagem));
+            compilerOutput = compiler.compile(decode(codigo), decode(linguagem), decode(escape));
         }
         catch (UnsupportedEncodingException ex) {
             ex.printStackTrace();
