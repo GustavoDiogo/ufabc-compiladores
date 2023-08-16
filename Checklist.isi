@@ -99,6 +99,7 @@ fimprog.
 
 programa
 	numero a.
+	escreva(a).
 fimprog.
 
 // Item OPCIONAL - Avaliador de expressões aritméticas
